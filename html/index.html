@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSRP Characters</title>
+    <style>html,body{background:transparent!important}</style>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body style="background:transparent!important">
+    <!-- CHARACTER SELECT (multi-slot) -->
+    <div id="charSelect" class="overlay hidden">
+        <div class="panel select-panel">
+            <div class="edge edge-top"></div>
+            <div class="edge edge-bottom"></div>
+            <div class="corner c-tl"></div>
+            <div class="corner c-tr"></div>
+            <div class="corner c-bl"></div>
+            <div class="corner c-br"></div>
+            <div class="glow-bar"></div>
+
+            <div class="brand">
+                <div class="badge"><span class="pulse-dot"></span> IDENTITY GRID</div>
+                <h1>CHARACTERS // SELECT</h1>
+                <div class="tag">Select a character · <span id="slotCount">0/5</span> used</div>
+                <div class="brand-line"></div>
+            </div>
+
+            <div class="char-grid fx-scroll" id="charGrid"></div>
+            <p class="select-hint">Choose a filled slot to play · Use an empty slot only when creating a new character</p>
+        </div>
+    </div>
+
+    <!-- DELETE CHARACTER CONFIRM -->
+    <div id="deleteModal" class="modal-overlay hidden">
+        <div class="panel delete-panel">
+            <div class="edge edge-top"></div>
+            <div class="edge edge-bottom"></div>
+            <div class="corner c-tl"></div>
+            <div class="corner c-tr"></div>
+            <div class="corner c-bl"></div>
+            <div class="corner c-br"></div>
+            <div class="glow-bar danger-bar"></div>
+
+            <div class="brand">
+                <div class="badge danger-badge"><span class="pulse-dot danger-dot"></span> PURGE REQUEST</div>
+                <h1>DELETE CHARACTER</h1>
+                <div class="tag">This action cannot be undone</div>
+                <div class="brand-line danger-line"></div>
+            </div>
+
+            <div class="delete-body">
+                <div class="delete-stat">
+                    <span class="k">SUBJECT</span>
+                    <span class="v" id="delName">—</span>
+                </div>
+                <div class="delete-stat">
+                    <span class="k">SLOT</span>
+                    <span class="v" id="delSlot">—</span>
+                </div>
+                <div class="delete-stat">
+                    <span class="k">STATUS</span>
+                    <span class="v" id="delMeta">—</span>
+                </div>
+                <p class="delete-warn">All progress, inventory, and identity data for this character will be permanently wiped from the grid.</p>
+            </div>
+
+            <div class="delete-actions">
+                <button type="button" class="btn ghost" id="delCancel">CANCEL</button>
+                <button type="button" class="btn danger" id="delConfirm">CONFIRM DELETE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARACTER CREATOR -->
+    <div id="creator" class="overlay hidden">
+        <div class="panel creator-panel">
+            <div class="edge edge-top"></div>
+            <div class="edge edge-bottom"></div>
+            <div class="corner c-tl"></div>
+            <div class="corner c-tr"></div>
+            <div class="corner c-bl"></div>
+            <div class="corner c-br"></div>
+            <div class="glow-bar"></div>
+
+            <div class="brand">
+                <div class="badge"><span class="pulse-dot"></span> IDENTITY</div>
+                <h1 id="creatorTitle">CHARACTER // CREATE</h1>
+                <div class="tag" id="creatorTag">BSRP GRID REGISTRATION</div>
+                <div class="brand-line"></div>
+            </div>
+
+            <div class="steps">
+                <button type="button" class="step active" data-step="0">1 NAME</button>
+                <button type="button" class="step" data-step="1">2 DNA</button>
+                <button type="button" class="step" data-step="2">3 FACE</button>
+                <button type="button" class="step" data-step="3">4 STYLE</button>
+            </div>
+
+            <div class="step-pane active" id="step-0">
+                <label>CALLSIGN</label>
+                <input type="text" id="charName" maxlength="24" placeholder="Your name…" />
+                <label>GENDER</label>
+                <div class="row2">
+                    <button type="button" class="btn gender active" data-gender="male">MALE</button>
+                    <button type="button" class="btn gender" data-gender="female">FEMALE</button>
+                </div>
+            </div>
+
+            <div class="step-pane" id="step-1">
+                <label>MOTHER (SHAPE A) <span id="vShapeA">0</span></label>
+                <input type="range" id="shapeFirst" min="0" max="45" value="0" />
+                <label>FATHER (SHAPE B) <span id="vShapeB">21</span></label>
+                <input type="range" id="shapeSecond" min="0" max="45" value="21" />
+                <label>RESHAPE MIX <span id="vShapeMix">50%</span></label>
+                <input type="range" id="shapeMix" min="0" max="100" value="50" />
+                <label>SKIN TONE A <span id="vSkinA">0</span></label>
+                <input type="range" id="skinFirst" min="0" max="45" value="0" />
+                <label>SKIN TONE B <span id="vSkinB">0</span></label>
+                <input type="range" id="skinSecond" min="0" max="45" value="0" />
+                <label>SKIN MIX <span id="vSkinMix">50%</span></label>
+                <input type="range" id="skinMix" min="0" max="100" value="50" />
+            </div>
+
+            <div class="step-pane" id="step-2">
+                <div class="face-list fx-scroll" id="faceList"></div>
+            </div>
+
+            <div class="step-pane" id="step-3">
+                <label>HAIR STYLE <span id="vHair">0</span></label>
+                <input type="range" id="hair" min="0" max="76" value="0" />
+                <label>HAIR COLOR <span id="vHairColor">0</span></label>
+                <input type="range" id="hairColor" min="0" max="63" value="0" />
+                <label>HIGHLIGHT <span id="vHairHi">0</span></label>
+                <input type="range" id="hairHighlight" min="0" max="63" value="0" />
+                <label>EYE COLOR <span id="vEye">0</span></label>
+                <input type="range" id="eyeColor" min="0" max="31" value="0" />
+                <label>BEARD <span id="vBeard">None</span></label>
+                <input type="range" id="beard" min="-1" max="28" value="-1" />
+                <label>OUTFIT PRESET</label>
+                <div class="preset-grid fx-scroll" id="presetRow"></div>
+                <label>ROTATE</label>
+                <div class="row2">
+                    <button type="button" class="btn ghost" id="rotL">◀ 15°</button>
+                    <button type="button" class="btn ghost" id="rotR">15° ▶</button>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button type="button" class="btn ghost" id="btnPrev">BACK</button>
+                <button type="button" class="btn primary" id="btnNext">NEXT</button>
+                <button type="button" class="btn primary hidden" id="btnFinish">ENTER GRID</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPAWN SELECTOR -->
+    <div id="spawn" class="overlay hidden">
+        <div class="panel spawn-panel">
+            <div class="edge edge-top"></div>
+            <div class="edge edge-bottom"></div>
+            <div class="corner c-tl"></div>
+            <div class="corner c-tr"></div>
+            <div class="corner c-bl"></div>
+            <div class="corner c-br"></div>
+            <div class="glow-bar"></div>
+
+            <div class="brand">
+                <div class="badge"><span class="pulse-dot"></span> DEPLOY</div>
+                <h1>SPAWN // SELECT</h1>
+                <div class="tag">Welcome, <span id="spawnName">RACER</span></div>
+                <div class="brand-line"></div>
+            </div>
+
+            <div class="spawn-grid fx-scroll" id="spawnGrid"></div>
+            <button type="button" class="btn primary" id="btnSpawn" disabled>CONFIRM SPAWN</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
